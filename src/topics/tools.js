@@ -23,7 +23,7 @@ module.exports = function (Topics) {
 		return await toggleDelete(tid, uid, false);
 	};
 
-	// Used ChaptGPT for help with syntax and function structure
+	// Used ChaptGPT for help with syntax and function structure for JS
 	function deletionErrorMessage (data) {
 		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
 			throw new Error('[[error:no-privileges]]');
