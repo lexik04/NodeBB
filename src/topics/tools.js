@@ -23,6 +23,18 @@ module.exports = function (Topics) {
 		return await toggleDelete(tid, uid, false);
 	};
 
+	// Used ChaptGPT for help with syntax and function structure
+	function deletionErrorMessage (data) {
+		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
+			throw new Error('[[error:no-privileges]]');
+		}
+		if (data.topicData.deleted && data.isDelete) {
+			throw new Error('[[error:topic-already-deleted]]');
+		} else if (!data.topicData.deleted && !data.isDelete) {
+			throw new Error('[[error:topic-already-restored]]');
+		}
+	}
+
 	async function toggleDelete(tid, uid, isDelete) {
 		const topicData = await Topics.getTopicData(tid);
 		if (!topicData) {
@@ -37,14 +49,9 @@ module.exports = function (Topics) {
 		const hook = isDelete ? 'delete' : 'restore';
 		const data = await plugins.hooks.fire(`filter:topic.${hook}`, { topicData: topicData, uid: uid, isDelete: isDelete, canDelete: canDelete, canRestore: canDelete });
 
-		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
-			throw new Error('[[error:no-privileges]]');
-		}
-		if (data.topicData.deleted && data.isDelete) {
-			throw new Error('[[error:topic-already-deleted]]');
-		} else if (!data.topicData.deleted && !data.isDelete) {
-			throw new Error('[[error:topic-already-restored]]');
-		}
+		// Asked chatgpt how to call one function inside another function in JS
+		deletionErrorMessage(data);
+
 		if (data.isDelete) {
 			await Topics.delete(data.topicData.tid, data.uid);
 		} else {
