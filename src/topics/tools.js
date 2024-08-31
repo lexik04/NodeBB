@@ -94,7 +94,7 @@ module.exports = function (Topics) {
 
 	async function toggleLock(tid, uid, lock) {
 		const topicData = await Topics.getTopicFields(tid, ['tid', 'uid', 'cid']);
-		if (!topicData || !topicData.cid) {
+		if (!topicData?.cid) {
 			throw new Error('[[error:no-topic]]');
 		}
 		const isAdminOrMod = await privileges.categories.isAdminOrMod(topicData.cid, uid);
