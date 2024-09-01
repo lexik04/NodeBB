@@ -111,7 +111,8 @@ prestart.versionCheck();
 
 if (!configExists && process.argv[2] !== 'setup') {
 	require('./setup').webInstall();
-	return;
+	// Asked Chat GPT how to remove the return due to causing errors in lint
+	process.exit(0);
 }
 
 if (configExists) {

@@ -23,6 +23,18 @@ module.exports = function (Topics) {
 		return await toggleDelete(tid, uid, false);
 	};
 
+	// Asked Chat GPT the correct syntax of functions in JS
+	function deleteErrorMessage(data) {
+		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
+			throw new Error('[[error:no-privileges]]');
+		}
+		if (data.topicData.deleted && data.isDelete) {
+			throw new Error('[[error:topic-already-deleted]]');
+		} else if (!data.topicData.deleted && !data.isDelete) {
+			throw new Error('[[error:topic-already-restored]]');
+		}
+	}
+
 	async function toggleDelete(tid, uid, isDelete) {
 		const topicData = await Topics.getTopicData(tid);
 		if (!topicData) {
@@ -37,14 +49,9 @@ module.exports = function (Topics) {
 		const hook = isDelete ? 'delete' : 'restore';
 		const data = await plugins.hooks.fire(`filter:topic.${hook}`, { topicData: topicData, uid: uid, isDelete: isDelete, canDelete: canDelete, canRestore: canDelete });
 
-		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
-			throw new Error('[[error:no-privileges]]');
-		}
-		if (data.topicData.deleted && data.isDelete) {
-			throw new Error('[[error:topic-already-deleted]]');
-		} else if (!data.topicData.deleted && !data.isDelete) {
-			throw new Error('[[error:topic-already-restored]]');
-		}
+		// Asked chat GPT how to call one fucntion inside of another
+		deleteErrorMessage(data);
+
 		if (data.isDelete) {
 			await Topics.delete(data.topicData.tid, data.uid);
 		} else {
@@ -94,7 +101,8 @@ module.exports = function (Topics) {
 
 	async function toggleLock(tid, uid, lock) {
 		const topicData = await Topics.getTopicFields(tid, ['tid', 'uid', 'cid']);
-		if (!topicData || !topicData.cid) {
+		// Asked ChatGPT the correct sytnax for the optional chain expression here
+		if (!topicData?.cid) {
 			throw new Error('[[error:no-topic]]');
 		}
 		const isAdminOrMod = await privileges.categories.isAdminOrMod(topicData.cid, uid);
