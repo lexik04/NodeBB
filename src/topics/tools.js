@@ -24,7 +24,7 @@ module.exports = function (Topics) {
 	};
 
 	// Used ChaptGPT for help with syntax and function structure for JS
-	function deletionErrorMessage (data) {
+	function deletionErrorMessage(data) {
 		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
 			throw new Error('[[error:no-privileges]]');
 		}
@@ -101,6 +101,7 @@ module.exports = function (Topics) {
 
 	async function toggleLock(tid, uid, lock) {
 		const topicData = await Topics.getTopicFields(tid, ['tid', 'uid', 'cid']);
+		// Used ChatGPT to correctly adjust this to an optional chaining expression
 		if (!topicData?.cid) {
 			throw new Error('[[error:no-topic]]');
 		}
