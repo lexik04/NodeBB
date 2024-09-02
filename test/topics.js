@@ -844,6 +844,23 @@ describe('Topic\'s', () => {
 			}
 			assert(false);
 		});
+
+		it('should not allow user to restore a topic that has already been restored', async () => {
+			const result = await topics.post({
+				uid: fooUid,
+				title: 'topic for restore test',
+				content: 'topic content',
+				cid: categoryObj.cid,
+			});
+			await apiTopics.delete({ uid: fooUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
+			await apiTopics.restore({ uid: fooUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
+			try {
+				await apiTopics.restore({ uid: fooUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
+				assert(false);
+			} catch (err) {
+				return assert.strictEqual(err.message, '[[error:topic-already-restored]]');
+			}
+		});
 	});
 
 	describe('order pinned topics', () => {
