@@ -856,6 +856,7 @@ describe('Topic\'s', () => {
 			await apiTopics.restore({ uid: fooUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
 			try {
 				await apiTopics.restore({ uid: fooUid }, { tids: [result.topicData.tid], cid: categoryObj.cid });
+				// Asked ChatGPT how to ensure that this would hit catch
 				assert(false);
 			} catch (err) {
 				return assert.strictEqual(err.message, '[[error:topic-already-restored]]');
