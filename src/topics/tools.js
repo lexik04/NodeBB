@@ -25,6 +25,7 @@ module.exports = function (Topics) {
 
 	// Asked Chat GPT the correct syntax of functions in JS
 	function deleteErrorMessage(data) {
+		console.log('Lexi Kronowitz');
 		if ((!data.canDelete && data.isDelete) || (!data.canRestore && !data.isDelete)) {
 			throw new Error('[[error:no-privileges]]');
 		}
